@@ -14,56 +14,123 @@ export default {
     onMounted(() => {
       const ctx = document.getElementById('starCanvas').getContext('2d')
       // const count = ref(0);
-      drawArc(ctx, {x: 500, y: 300, r: 20, color: "rgb(76,145,232)"}, 1)
-      const classNumber = getClass()
-      const ceshishuju = {
-        h: (classNumber.y - 300) * -1,
-        w: classNumber.x - 500,
-      }
-      console.log(ceshishuju)
-      const getMr = ceshishuju.h * ceshishuju.h + ceshishuju.w * ceshishuju.w
-      const mr = Math.sqrt(getMr)
+      // 旋转函数
+      function rotateMain(number) {
+        // let a = 0
+        let rotateMsgList = []
+        // let colorListBox = []
+        let rList = []
+        let aList = []
+        for (let i = 0; i <number ; i++) {
+          let r = randomN(8)
+          if (r<4){
+            r=4
+          }
+          rotateMsgList.push(getClass())
+          // colorListBox.push({
+          //   r: randomN(255),
+          //   g: randomN(255),
+          //   b: randomN(255),
+          //   a: 1
+          // })
+          aList.push(0)
+          rList.push(r)
 
-      // 求角度
-      function getAg() {
-        var ag = 0
-        ag = Math.round(Math.atan(ceshishuju.w / ceshishuju.h) * 180 / Math.PI)
-        if (ceshishuju.h < 0 && ceshishuju.w > 0) {
-          ag = 180 + ag
-        } else if (ceshishuju.h < 0 && ceshishuju.w < 0) {
-          ag = 180 + ag
-        } else if (ceshishuju.h > 0 && ceshishuju.w < 0) {
-          ag = 360 + ag
         }
-        return ag
+
+
+
+
+        setInterval(function () {
+
+          // ctx.clearRect(0, 0, 1000, 600)
+          drawArc(ctx, {x: 500, y: 300}, 20, "rgb(76,145,232)", 1)
+          for (let i = 0; i < number; i++) {
+            let rotateMsg = rotateMsgList[i]
+            // let colorList = colorListBox[i]
+            const listColor = `rgb(255,255,255)`
+            const br = rList[i]
+            drawArc(ctx, getXY(rotateMsg), br, listColor, 1)
+
+          // 拖尾
+          // if (a !== 0) {
+          //   let mr = r
+          //   let cor = colorList.a
+          //   for (let b = 0; b < 50; b++) {
+          //     if (b !== 0) {
+          //       drawArc(ctx, getXY({
+          //         ag: rotateMsg.ag - b,
+          //         br: rotateMsg.br
+          //       }), mr, `rgb(${colorList.r}, ${colorList.g}, ${colorList.b}, ${cor})`, 1)
+          //       mr = mr - r / 50
+          //       cor = cor - colorList.a / 50
+          //     }
+          //   }
+          // }
+            rotateMsg.ag++
+            if (rotateMsg.ag === 360) {
+              rotateMsg.ag = 0
+            }
+
+            if (rotateMsg.br <= 20 && aList[i] === 0){
+              aList[i] = 1
+              rotateMsg.br +=0.1
+            }else if (aList[i]===1 && rotateMsg.br >= 300){
+              aList[i]=0
+              rotateMsg.br -=0.1
+            }else if(aList[i]===0 && rotateMsg.br <300){
+              rotateMsg.br -=0.1
+            }else if(aList[i]===1 && rotateMsg.br <300){
+              rotateMsg.br +=0.1
+            }
+
+          }
+          ctx.fillStyle = 'rgb(0, 0 , 0,.07)'
+          ctx.rect(0, 0, 1000, 600)
+          ctx.fill()
+          // a++
+        }, 1000 / 60)
       }
-      console.log(mr, getAg())
 
-      // 角度增长函数
-      function ceshi2(mr, ag){
-        const sin = Math.cos(ag*Math.PI/180)
+      rotateMain(50)
 
+      // 反推xy函数
+      function getXY(classNumber) {
+        let Tag, Tx, Ty
+        if (classNumber.ag > 90 && classNumber.ag <= 180) {
+          Tag = 180 - classNumber.ag
+          Ty = classNumber.br * Math.cos(Tag * Math.PI / 180) * -1
+          Tx = Ty * Math.tan(Tag * Math.PI / 180) * -1
+        } else if (classNumber.ag > 180 && classNumber.ag <= 270) {
+          Tag = classNumber.ag - 180
+          Ty = classNumber.br * Math.cos(Tag * Math.PI / 180) * -1
+          Tx = Ty * Math.tan(Tag * Math.PI / 180)
+        } else if (classNumber.ag > 270 && classNumber.ag <= 360) {
+          Tag = 360 - classNumber.ag
+          Ty = classNumber.br * Math.cos(Tag * Math.PI / 180)
+          Tx = Ty * Math.tan(Tag * Math.PI / 180) * -1
+        } else {
+          Tag = classNumber.ag
+          Ty = classNumber.br * Math.cos(Tag * Math.PI / 180)
+          Tx = Ty * Math.tan(Tag * Math.PI / 180)
+        }
+        const x = 500 + Tx
+        const y = 300 - Ty
+        return {
+          Tag,
+          Tx,
+          Ty,
+          x,
+          y,
+        }
       }
-      drawArc(ctx, classNumber, 1)
-      // const a = setInterval(function () {
-      //   ctx.clearRect(0, 0, 1000, 600)
-      //   drawArc(ctx, {x: 500, y: 300, r: 20, color: "rgb(76,145,232)"}, 1)
-      //   for (let i = 0; i < 10; i++) {
-      //     drawArc(ctx, getClass(), 1)
-      //   }
-      //   count.value++
-      //   if (count.value === 100) {
-      //     clearInterval(a)
-      //   }
-      // }, 1000 / 60)
-
     })
 
     // 画点或圆函数
-    function drawArc(ctx, classNumber, fill) {
+    function drawArc(ctx, classNumber, r, color, fill) {
       ctx.beginPath()
-      ctx.fillStyle = classNumber.color
-      ctx.arc(classNumber.x, classNumber.y, classNumber.r, 0, 2 * Math.PI)
+      ctx.fillStyle = color
+      ctx.arc(classNumber.x, classNumber.y, r, 0, 2 * Math.PI)
       if (fill) {
         ctx.fill()
       } else {
@@ -74,22 +141,20 @@ export default {
     // 生成随机值
     function randomN(number) {
       const Number = Math.random() * number
-
       return Math.round(Number)
     }
 
     // 生成所需字典方法
     function getClass() {
+      let br = randomN(220)
+      if (br<20){
+        br=20
+      }
       return {
-        x: randomN(1000),
-        y: randomN(600),
-        r: randomN(10),
-        color: `rgb(${randomN(255)}, ${randomN(255)}, ${randomN(255)})`
+        ag: randomN(360),
+        br: br,
       }
     }
-
-    console.log(getClass())
-
     return {}
   }
 }
