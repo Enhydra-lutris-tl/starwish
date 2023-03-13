@@ -1,14 +1,17 @@
 <template>
+  <starBack/>
   <starCanvas/>
+
 </template>
 
 <script>
 import starCanvas from './components/starCanvas.vue'
-
+import starBack from './components/starBack'
 export default {
   name: 'App',
   components: {
-    starCanvas
+    starCanvas,
+    starBack
   }
 }
 </script>

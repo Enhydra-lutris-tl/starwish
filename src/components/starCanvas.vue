@@ -21,10 +21,15 @@ export default {
         // let colorListBox = []
         let rList = []
         let aList = []
+        let agLists = []
         for (let i = 0; i <number ; i++) {
           let r = randomN(8)
           if (r<4){
             r=4
+          }
+          let agr = randomN(2)
+          if (agr===0){
+            agr=1
           }
           rotateMsgList.push(getClass())
           // colorListBox.push({
@@ -35,6 +40,7 @@ export default {
           // })
           aList.push(0)
           rList.push(r)
+          agLists.push(agr)
 
         }
 
@@ -46,28 +52,14 @@ export default {
           // ctx.clearRect(0, 0, 1000, 600)
           drawArc(ctx, {x: 500, y: 300}, 20, "rgb(76,145,232)", 1)
           for (let i = 0; i < number; i++) {
+            const agList = agLists[i]
             let rotateMsg = rotateMsgList[i]
             // let colorList = colorListBox[i]
             const listColor = `rgb(255,255,255)`
             const br = rList[i]
             drawArc(ctx, getXY(rotateMsg), br, listColor, 1)
 
-          // 拖尾
-          // if (a !== 0) {
-          //   let mr = r
-          //   let cor = colorList.a
-          //   for (let b = 0; b < 50; b++) {
-          //     if (b !== 0) {
-          //       drawArc(ctx, getXY({
-          //         ag: rotateMsg.ag - b,
-          //         br: rotateMsg.br
-          //       }), mr, `rgb(${colorList.r}, ${colorList.g}, ${colorList.b}, ${cor})`, 1)
-          //       mr = mr - r / 50
-          //       cor = cor - colorList.a / 50
-          //     }
-          //   }
-          // }
-            rotateMsg.ag++
+            rotateMsg.ag+=agList
             if (rotateMsg.ag === 360) {
               rotateMsg.ag = 0
             }
@@ -83,11 +75,12 @@ export default {
             }else if(aList[i]===1 && rotateMsg.br <300){
               rotateMsg.br +=0.1
             }
-
           }
-          ctx.fillStyle = 'rgb(0, 0 , 0,.07)'
-          ctx.rect(0, 0, 1000, 600)
-          ctx.fill()
+          ctx.save()
+          ctx.fillStyle = 'rgb(0, 0 , 0,.9)'
+          ctx.globalCompositeOperation = 'destination-in';
+          ctx.fillRect(0, 0, 1000, 600)
+          ctx.restore();
           // a++
         }, 1000 / 60)
       }
@@ -162,11 +155,16 @@ export default {
 
 <style scoped>
 .main-back {
+  position: absolute;
+  top: 0;
+  left: 0;
   height: 100%;
   width: 100%;
+  z-index: 10;
 }
 
 canvas {
   border: #42b983 solid 2px;
+  /*background: rgba(0, 166, 255, 0.96);*/
 }
 </style>
