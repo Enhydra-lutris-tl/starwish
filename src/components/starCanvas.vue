@@ -56,8 +56,8 @@ export default {
             let rotateMsg = rotateMsgList[i]
             // let colorList = colorListBox[i]
             const listColor = `rgb(255,255,255)`
-            const br = rList[i]
-            drawArc(ctx, getXY(rotateMsg), br, listColor, 1)
+            const classlist = getXY(rotateMsg)
+            drawArc(ctx, classlist, Math.abs(rotateMsg.br)/30, listColor, 1)
 
             rotateMsg.ag+=agList
             if (rotateMsg.ag === 360) {
@@ -129,6 +129,10 @@ export default {
       } else {
         ctx.stroke()
       }
+      ctx.shadowColor = 'rgba(225,225,225,.8)';
+      ctx.shadowBlur =50;
+      ctx.shadowOffsetX = 0;
+      ctx.shadowOffsetY = 0;
     }
 
     // 生成随机值
